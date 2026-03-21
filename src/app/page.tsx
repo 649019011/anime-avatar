@@ -12,11 +12,11 @@ interface Style {
 }
 
 const STYLES: Style[] = [
-  { id: 'anime_standard', name: 'Anime Standard', emoji: '🎌', prompt: 'anime style, high quality, detailed anime artwork' },
-  { id: 'manga', name: 'Manga', emoji: '📖', prompt: 'manga style, black and white, cel shaded, manga art' },
-  { id: 'ghibli', name: 'Ghibli', emoji: '🌿', prompt: 'ghibli studio style, anime, Hayao Miyazaki inspired, soft colors' },
-  { id: 'cyberpunk', name: 'Cyberpunk', emoji: '🌃', prompt: 'cyberpunk anime style, neon colors, futuristic anime' },
-  { id: 'soft_cel', name: 'Soft Cel-shading', emoji: '🌸', prompt: 'soft cel shading anime, pastel colors, gentle gradients' },
+  { id: 'anime_standard', name: 'Anime', emoji: '🎌', prompt: 'anime style, high quality' },
+  { id: 'manga', name: 'Manga', emoji: '📖', prompt: 'manga style, black and white' },
+  { id: 'ghibli', name: 'Ghibli', emoji: '🌿', prompt: 'ghibli studio style, Hayao Miyazaki' },
+  { id: 'cyberpunk', name: 'Cyberpunk', emoji: '🌃', prompt: 'cyberpunk anime, neon lights' },
+  { id: 'soft_cel', name: 'Soft', emoji: '🌸', prompt: 'soft cel shading, pastel colors' },
 ]
 
 export default function HomePage() {
@@ -27,7 +27,7 @@ export default function HomePage() {
   const [statusText, setStatusText] = useState('')
   const [resultImage, setResultImage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [credits, setCredits] = useState(3) // Free credits for demo
+  const [credits] = useState(3)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileSelect = useCallback((file: File) => {
@@ -64,11 +64,9 @@ export default function HomePage() {
     setIsGenerating(true)
     setStatusText('Uploading your photo...')
     setError(null)
-    setCredits(prev => prev - 1)
 
     try {
       const base64 = previewUrl!
-
       setStatusText('AI is creating your anime avatar...')
       
       const response = await fetch('/api/generate', {
@@ -90,121 +88,124 @@ export default function HomePage() {
       setResultImage(data.image)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
-      setCredits(prev => prev + 1) // Refund
     } finally {
       setIsGenerating(false)
     }
   }
 
   return (
-    <main className="container">
-      <header>
-        <h1>✨ Anime Avatar</h1>
-        <p>Transform your photo into stunning anime style</p>
+    <main className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="text-center py-10 px-4">
+        <h1 className="text-4xl font-extrabold bg-gradient-to-r from-purple-500 to-violet-600 bg-clip-text text-transparent mb-2">
+          ✨ Anime Avatar
+        </h1>
+        <p className="text-gray-500 text-lg">Transform your photo into stunning anime style</p>
       </header>
 
-      {/* Credits Info */}
-      <div className="credits-info">
-        🎁 You have <strong>{credits}</strong> free credits remaining
-      </div>
+      <div className="max-w-xl mx-auto px-4 pb-12">
+        {/* Credits Banner */}
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-center text-amber-800 text-sm mb-4">
+          🎁 You have <span className="font-bold">{credits}</span> free credits
+        </div>
 
-      {/* Upload Zone */}
-      <div
-        className={`upload-zone ${previewUrl ? '' : ''}`}
-        onClick={() => fileInputRef.current?.click()}
-        onDrop={handleDrop}
-        onDragOver={(e) => e.preventDefault()}
-      >
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleInputChange}
-          accept="image/jpeg,image/png,image/webp"
-          style={{ display: 'none' }}
-        />
-        {previewUrl ? (
-          <img src={previewUrl} alt="Preview" className="upload-preview" />
-        ) : (
-          <>
-            <div className="upload-icon">📸</div>
-            <p>Click or drag your photo here</p>
-            <small>JPG, PNG, WebP • Max 10MB</small>
-          </>
+        {/* Upload Zone */}
+        <div
+          className="upload-zone mb-6"
+          onClick={() => fileInputRef.current?.click()}
+          onDrop={handleDrop}
+          onDragOver={(e) => e.preventDefault()}
+        >
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleInputChange}
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+          />
+          {previewUrl ? (
+            <img src={previewUrl} alt="Preview" className="max-h-64 mx-auto rounded-xl object-contain" />
+          ) : (
+            <>
+              <div className="text-5xl mb-3">📸</div>
+              <p className="text-gray-600">Click or drag your photo here</p>
+              <p className="text-gray-400 text-sm mt-1">JPG, PNG, WebP • Max 10MB</p>
+            </>
+          )}
+        </div>
+
+        {/* Style Selector */}
+        <div className="mb-6">
+          <h3 className="text-sm font-semibold text-gray-700 mb-3">Choose your anime style</h3>
+          <div className="grid grid-cols-5 gap-2">
+            {STYLES.map((style) => (
+              <div
+                key={style.id}
+                className={`style-card ${selectedStyle === style.id ? 'selected' : ''}`}
+                onClick={() => setSelectedStyle(style.id)}
+              >
+                <span className="text-2xl">{style.emoji}</span>
+                <div className="text-xs font-medium mt-1">{style.name}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Error */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm mb-4">
+            ⚠️ {error}
+          </div>
         )}
-      </div>
 
-      {/* Style Selector */}
-      <div className="style-selector">
-        <h3>Choose your anime style</h3>
-        <div className="style-grid">
-          {STYLES.map((style) => (
-            <div
-              key={style.id}
-              className={`style-card ${selectedStyle === style.id ? 'selected' : ''}`}
-              onClick={() => setSelectedStyle(style.id)}
+        {/* Result */}
+        {resultImage && (
+          <div className="bg-white rounded-2xl p-4 text-center shadow-sm mb-4">
+            <img src={resultImage} alt="Result" className="rounded-xl mb-4 max-w-full" />
+            <a
+              href={resultImage}
+              download="anime-avatar.png"
+              className="inline-block px-6 py-3 bg-gradient-to-r from-purple-500 to-violet-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
             >
-              <span style={{ fontSize: '2rem' }}>{style.emoji}</span>
-              <div className="style-name">{style.name}</div>
-            </div>
-          ))}
-        </div>
+              ⬇️ Download Avatar
+            </a>
+            <button
+              onClick={() => {
+                setResultImage(null)
+                setSelectedFile(null)
+                setPreviewUrl(null)
+              }}
+              className="block w-full mt-3 py-2 text-gray-500 hover:text-gray-700 text-sm"
+            >
+              🔄 Create Another
+            </button>
+          </div>
+        )}
+
+        {/* Generating Status */}
+        {isGenerating && (
+          <div className="bg-white rounded-2xl p-8 text-center shadow-sm mb-4">
+            <div className="spinner mb-4"></div>
+            <p className="text-gray-600">{statusText}</p>
+          </div>
+        )}
+
+        {/* Generate Button */}
+        {!resultImage && !isGenerating && (
+          <button
+            className="btn-gradient"
+            onClick={handleGenerate}
+            disabled={!selectedFile || credits <= 0}
+          >
+            {credits > 0 ? '🎨 Generate Anime Avatar' : 'No credits remaining'}
+          </button>
+        )}
+
+        {/* Footer */}
+        <footer className="text-center text-gray-400 text-sm mt-8">
+          © 2026 Anime Avatar · Made with ✨ AI
+        </footer>
       </div>
-
-      {/* Error */}
-      {error && (
-        <div className="status-box" style={{ background: '#fef2f2', color: '#991b1b', padding: '16px' }}>
-          ⚠️ {error}
-        </div>
-      )}
-
-      {/* Result */}
-      {resultImage && (
-        <div className="result-container">
-          <img src={resultImage} alt="Result" className="result-image" />
-          <br />
-          <a href={resultImage} download="anime-avatar.png" className="download-btn">
-            ⬇️ Download Avatar
-          </a>
-        </div>
-      )}
-
-      {/* Status */}
-      {isGenerating && (
-        <div className="status-box">
-          <div className="spinner"></div>
-          <p className="status-text">{statusText}</p>
-        </div>
-      )}
-
-      {/* Generate Button */}
-      {!resultImage && !isGenerating && (
-        <button
-          className="generate-btn"
-          onClick={handleGenerate}
-          disabled={!selectedFile || credits <= 0}
-        >
-          {credits > 0 ? '🎨 Generate Anime Avatar' : 'No credits remaining'}
-        </button>
-      )}
-
-      {/* Try Again */}
-      {resultImage && !isGenerating && (
-        <button
-          className="generate-btn"
-          onClick={() => {
-            setResultImage(null)
-            setSelectedFile(null)
-            setPreviewUrl(null)
-          }}
-          style={{ marginTop: '16px' }}
-        >
-          🔄 Create Another Avatar
-        </button>
-      )}
-
-      <footer>
-        <p>© 2026 Anime Avatar · Made with ✨ AI</p>
-      </footer>
     </main>
   )
 }

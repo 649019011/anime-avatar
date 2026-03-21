@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// Style prompts mapping
 const STYLE_PROMPTS: Record<string, string> = {
-  anime_standard: 'anime style, high quality, detailed anime artwork, vibrant colors',
-  manga: 'manga style, black and white, cel shaded, manga art, high contrast',
-  ghibli: 'ghibli studio style anime, Hayao Miyazaki inspired, soft colors, gentle lighting, Studio Ghibli artwork',
-  cyberpunk: 'cyberpunk anime style, neon colors, futuristic anime, glowing lights, dark background',
-  soft_cel: 'soft cel shading anime, pastel colors, gentle gradients, kawaii style, smooth outlines',
+  anime_standard: 'anime style, high quality, detailed anime artwork, vibrant colors, sharp focus',
+  manga: 'manga style, black and white, cel shaded, manga art, high contrast, ink lines',
+  ghibli: 'ghibli studio style anime, Hayao Miyazaki inspired, soft colors, gentle lighting, Studio Ghibli artwork, watercolor feel',
+  cyberpunk: 'cyberpunk anime style, neon colors, futuristic anime, glowing neon lights, dark background, synthwave',
+  soft_cel: 'soft cel shading anime, pastel colors, gentle gradients, kawaii style, smooth outlines, light background',
 }
 
 export async function POST(request: NextRequest) {
@@ -20,8 +19,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const replicateApiKey = process.env.REPLICATE_API_TOKEN
-    if (!replicateApiKey) {
+    const apiToken = process.env.REPLICATE_API_TOKEN
+    if (!apiToken) {
       return NextResponse.json(
         { success: false, error: 'AI service not configured' },
         { status: 500 }
@@ -30,27 +29,31 @@ export async function POST(request: NextRequest) {
 
     const prompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.anime_standard
 
-    // Call Replicate API - anything-v4.0 for anime generation
+    // Remove data:image/...;base64, prefix if present
+    const imageData = image.includes(',') ? image.split(',')[1] : image
+
+    // Call Replicate API directly
     const response = await fetch('https://api.replicate.com/v1/predictions', {
       method: 'POST',
       headers: {
-        'Authorization': `Token ${replicateApiKey}`,
+        'Authorization': `Token ${apiToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         version: '7ba1dbd03fd54f8e7f8b74eb399e7c24ef8cb2481a6a7a4befa4a6e9a2c1d29e',
         input: {
-          prompt: prompt,
-          image: image,
+          prompt: `${prompt}, portrait, face focus, avatar style`,
+          image: `data:image/jpeg;base64,${imageData}`,
           num_inference_steps: 25,
           guidance_scale: 7.5,
+          prompt_strength: 0.8,
         },
       }),
     })
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error('Replicate API error:', errorText)
+      console.error('Replicate error:', errorText)
       return NextResponse.json(
         { success: false, error: 'AI generation failed' },
         { status: 500 }
@@ -58,21 +61,18 @@ export async function POST(request: NextRequest) {
     }
 
     const prediction = await response.json()
+    const predictionId = prediction.id
 
     // Poll for result
-    const predictionId = prediction.id
     let result = null
-    let attempts = 0
-    const maxAttempts = 60
-
-    while (attempts < maxAttempts) {
+    for (let i = 0; i < 60; i++) {
       await new Promise(resolve => setTimeout(resolve, 2000))
-      
+
       const statusResponse = await fetch(
         `https://api.replicate.com/v1/predictions/${predictionId}`,
         {
           headers: {
-            'Authorization': `Token ${replicateApiKey}`,
+            'Authorization': `Token ${apiToken}`,
           },
         }
       )
@@ -83,10 +83,12 @@ export async function POST(request: NextRequest) {
         result = statusData.output
         break
       } else if (statusData.status === 'failed') {
-        throw new Error('AI generation failed')
+        console.error('Prediction failed:', statusData.error)
+        return NextResponse.json(
+          { success: false, error: 'AI generation failed' },
+          { status: 500 }
+        )
       }
-
-      attempts++
     }
 
     if (!result) {
@@ -97,7 +99,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Result is an array, get the first image
-    const imageUrl = Array.isArray(result) ? result[0] : result
+    const imageUrl = Array.isArray(result) ? result[result.length - 1] : result
 
     return NextResponse.json({
       success: true,
