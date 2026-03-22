@@ -1,12 +1,16 @@
 const STYLE_PROMPTS = {
-  anime_standard: 'anime style, high quality, detailed anime artwork, vibrant colors, portrait avatar',
-  manga: 'manga style, black and white, cel shaded, manga art, portrait avatar',
-  ghibli: 'ghibli studio style anime, Hayao Miyazaki inspired, soft colors, gentle lighting, portrait avatar',
-  cyberpunk: 'cyberpunk anime style, neon colors, futuristic anime, glowing neon lights, portrait avatar',
-  soft_cel: 'soft cel shading anime, pastel colors, gentle gradients, kawaii style, portrait avatar',
+  anime_standard: `Anime style portrait illustration, clean crisp manga lines, vibrant professional coloring. Front-facing portrait, shoulders visible, character centered in frame. High-quality anime/manga portrait style. DO NOT include any text, signatures, watermarks, or letters. Aspect ratio: 1:1 square format for avatar. Character must be centered and clearly visible. Clean professional illustration quality. Sharp detailed anime eyes, clean facial features, proper anime proportions.`,
+
+  manga: `Manga style portrait illustration, sharp clean manga lines, professional black and white cel shading. Front-facing portrait, shoulders visible, character centered. High-quality manga art style. DO NOT include any text, signatures, watermarks. 1:1 square avatar format. Character centered and clearly visible. Bold ink lines, dynamic manga panel quality.`,
+
+  ghibli: `Ghibli studio style anime portrait, Hayao Miyazaki inspired, soft watercolor-like coloring, gentle warm lighting. Front-facing portrait, shoulders visible, character centered. High-quality Studio Ghibli artwork style. DO NOT include any text, signatures, watermarks. 1:1 square avatar format. Soft gradients, delicate anime features, warm pastoral atmosphere.`,
+
+  cyberpunk: `Cyberpunk anime portrait illustration, sharp clean lines, neon vibrant coloring, futuristic style. Front-facing portrait, shoulders visible, character centered. High-quality cyberpunk anime style. DO NOT include any text, signatures, watermarks. 1:1 square avatar format. Neon glow effects, dark moody background, sharp determined anime eyes, modern sci-fi aesthetic.`,
+
+  soft_cel: `Soft cel shading anime portrait illustration, pastel colors, gentle gradients, kawaii style. Front-facing portrait, shoulders visible, character centered. High-quality anime style. DO NOT include any text, signatures, watermarks. 1:1 square avatar format. Cute anime features, soft lighting, warm pastel palette, gentle expression.`,
 }
 
-const NEGATIVE = 'blurry, low quality, distorted face, deformed hands, extra fingers, watermark'
+const NEGATIVE = 'blurry, low quality, distorted face, deformed hands, extra fingers, watermark, text, letters, signature, watermark, deformed body, bad anatomy, ugly, duplicate, morbid, mutilated'
 
 export default {
   async fetch(request, env) {
@@ -53,7 +57,7 @@ export default {
           prompt: prompt,
           negative_prompt: NEGATIVE,
           image: Array.from(imageBytes),
-          num_steps: 20,
+          num_steps: 30,
           guidance: 7.5,
         }
       )

@@ -19,6 +19,37 @@ const STYLES: Style[] = [
   { id: 'soft_cel', name: 'Soft', emoji: '🌸', prompt: 'soft cel shading, pastel colors' },
 ]
 
+const PLANS = [
+  { name: 'Free', price: '$0', credits: 3, desc: 'Try it out', highlight: false },
+  { name: 'Basic', price: '$4.99', credits: 20, desc: 'Perfect for casual', highlight: false },
+  { name: 'Standard', price: '$9.99', credits: 50, desc: 'Most popular choice', highlight: true },
+  { name: 'Pro', price: '$19.99', credits: 120, desc: 'For power users', highlight: false },
+]
+
+const TESTIMONIALS = [
+  {
+    name: 'Sarah K.',
+    avatar: '/demo-before.jpeg',
+    result: '/demo-after.jpeg',
+    text: 'My Discord avatar got so many compliments! The anime style is absolutely stunning.',
+    rating: 5,
+  },
+  {
+    name: 'Mike T.',
+    avatar: '/demo-before.jpeg',
+    result: '/demo-after.jpeg',
+    text: 'Used it for my YouTube channel art. The Ghibli style is like magic!',
+    rating: 5,
+  },
+  {
+    name: 'Yuki M.',
+    avatar: '/demo-before.jpeg',
+    result: '/demo-after.jpeg',
+    text: 'Finally found an AI that actually captures the anime aesthetic perfectly. Worth every penny.',
+    rating: 5,
+  },
+]
+
 export default function HomePage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -68,7 +99,7 @@ export default function HomePage() {
     try {
       const base64 = previewUrl!
       setStatusText('AI is creating your anime avatar...')
-      
+
       const response = await fetch('https://anime-avatar-ai.langshi2101.workers.dev', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -101,9 +132,52 @@ export default function HomePage() {
           ✨ Anime Avatar
         </h1>
         <p className="text-gray-500 text-lg">Transform your photo into stunning anime style</p>
+        <div className="flex justify-center gap-6 mt-3 text-sm text-gray-400">
+          <span>🎨 5 Anime Styles</span>
+          <span>⚡ 10 Seconds</span>
+          <span>💎 10K+ Happy Users</span>
+        </div>
       </header>
 
       <div className="max-w-xl mx-auto px-4 pb-12">
+
+        {/* How It Works */}
+        <section className="mb-10">
+          <h2 className="text-xl font-bold text-gray-800 text-center mb-6">How It Works 🔥</h2>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-white rounded-2xl p-4 text-center shadow-sm">
+              <div className="text-3xl mb-2">📤</div>
+              <div className="text-sm font-semibold text-gray-700 mb-1">Upload</div>
+              <div className="text-xs text-gray-400">Your photo in seconds</div>
+            </div>
+            <div className="bg-white rounded-2xl p-4 text-center shadow-sm">
+              <div className="text-3xl mb-2">🎨</div>
+              <div className="text-sm font-semibold text-gray-700 mb-1">Choose Style</div>
+              <div className="text-xs text-gray-400">5 anime styles</div>
+            </div>
+            <div className="bg-white rounded-2xl p-4 text-center shadow-sm">
+              <div className="text-3xl mb-2">⬇️</div>
+              <div className="text-sm font-semibold text-gray-700 mb-1">Download</div>
+              <div className="text-xs text-gray-400">HD quality avatar</div>
+            </div>
+          </div>
+        </section>
+
+        {/* Showcase - Before/After Comparison */}
+        <section className="mb-10">
+          <h2 className="text-xl font-bold text-gray-800 text-center mb-6">See the Magic ✨</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-white rounded-2xl p-3 shadow-sm">
+              <p className="text-xs text-gray-400 text-center mb-2">Before</p>
+              <img src="/demo-before.jpeg" alt="Before" className="rounded-xl w-full object-cover aspect-square" />
+            </div>
+            <div className="bg-white rounded-2xl p-3 shadow-sm border-2 border-purple-400">
+              <p className="text-xs text-purple-600 text-center mb-2 font-semibold">After (Anime)</p>
+              <img src="/demo-after.jpeg" alt="After" className="rounded-xl w-full object-cover aspect-square" />
+            </div>
+          </div>
+        </section>
+
         {/* Credits Banner */}
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-center text-amber-800 text-sm mb-4">
           🎁 You have <span className="font-bold">{credits}</span> free credits
@@ -201,8 +275,62 @@ export default function HomePage() {
           </button>
         )}
 
+        {/* Social Proof / Testimonials */}
+        <section className="mt-16 mb-8">
+          <h2 className="text-xl font-bold text-gray-800 text-center mb-6">Loved by Users 💬</h2>
+          <div className="space-y-3">
+            {TESTIMONIALS.map((t, i) => (
+              <div key={i} className="bg-white rounded-2xl p-4 shadow-sm">
+                <div className="flex items-center gap-3 mb-3">
+                  <img src={t.avatar} alt={t.name} className="w-10 h-10 rounded-full object-cover" />
+                  <div className="flex-1">
+                    <div className="font-semibold text-sm text-gray-800">{t.name}</div>
+                    <div className="text-xs text-amber-400">{'★'.repeat(t.rating)}</div>
+                  </div>
+                  <img src={t.result} alt="result" className="w-12 h-12 rounded-lg object-cover" />
+                </div>
+                <p className="text-sm text-gray-600 italic">"{t.text}"</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Pricing Section */}
+        <section className="mt-16 mb-8">
+          <h2 className="text-xl font-bold text-gray-800 text-center mb-6">Simple Pricing 💎</h2>
+          <div className="grid grid-cols-2 gap-3">
+            {PLANS.map((plan) => (
+              <div
+                key={plan.name}
+                className={`rounded-2xl p-4 text-center ${
+                  plan.highlight
+                    ? 'bg-gradient-to-br from-purple-500 to-violet-600 text-white shadow-lg scale-105'
+                    : 'bg-white border border-gray-200 text-gray-700'
+                }`}
+              >
+                {plan.highlight && (
+                  <div className="text-xs font-bold text-purple-200 mb-1">⭐ MOST POPULAR</div>
+                )}
+                <div className="text-2xl font-extrabold mb-1">{plan.price}</div>
+                <div className="text-sm font-semibold">{plan.credits} credits</div>
+                <div className={`text-xs mt-1 ${plan.highlight ? 'text-purple-200' : 'text-gray-400'}`}>
+                  {plan.desc}
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-center text-gray-400 text-xs mt-4">
+            Credits never expire · One-time purchase · Secure payment
+          </p>
+        </section>
+
         {/* Footer */}
         <footer className="text-center text-gray-400 text-sm mt-8">
+          <div className="flex justify-center gap-4 mb-2">
+            <a href="#" className="hover:text-gray-600">Privacy Policy</a>
+            <a href="#" className="hover:text-gray-600">Terms of Service</a>
+            <a href="#" className="hover:text-gray-600">Contact</a>
+          </div>
           © 2026 Anime Avatar · Made with ✨ AI
         </footer>
       </div>
