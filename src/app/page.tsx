@@ -69,7 +69,7 @@ export default function HomePage() {
       const base64 = previewUrl!
       setStatusText('AI is creating your anime avatar...')
       
-      const response = await fetch('/api/generate', {
+      const response = await fetch('https://anime-avatar-ai.langshi2101.workers.dev', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
