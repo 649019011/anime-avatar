@@ -1,88 +1,264 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap');
 
 @theme {
-  --color-primary: #8b5cf6;
-  --color-primary-hover: #7c3aed;
-  --color-amber-50: #fffbeb;
-  --color-amber-200: #fde68a;
-  --color-amber-800: #92400e;
-  --color-red-50: #fef2f2;
-  --color-red-200: #fecaca;
-  --color-red-700: #b91c1c;
+  /* 品牌色 - 用 OKLCH 更柔和的紫 */
+  --color-brand: #8b5cf6;
+  --color-brand-hover: #7c3aed;
+  --color-brand-light: #f5f3ff;
+  
+  /* 中性色 - 带暖色调的灰 */
+  --color-warm-50: #fafaf9;
+  --color-warm-100: #f5f5f4;
+  --color-warm-200: #e7e5e4;
+  --color-warm-300: #d6d3d1;
+  --color-warm-400: #a8a29e;
+  --color-warm-500: #78716c;
+  --color-warm-600: #57534e;
+  --color-warm-700: #44403c;
+  --color-warm-800: #292524;
+  --color-warm-900: #1c1917;
+  
+  /* 功能色 */
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+  --color-warning: #f59e0b;
 }
 
-/* Upload zone dashed border animation */
+:root {
+  --font-heading: 'Sora', system-ui, sans-serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  
+  /* 专业动效 easing */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* 间距系统 8px */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--color-warm-50);
+  color: var(--color-warm-800);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.02em;
+}
+
+/* Upload zone */
 .upload-zone {
-  border: 2px dashed #e5e7eb;
+  position: relative;
+  border: 2px dashed var(--color-warm-200);
   border-radius: 1rem;
-  padding: 3rem;
+  padding: var(--space-12);
   text-align: center;
   cursor: pointer;
-  transition: all 0.2s;
+  background: white;
+  transition: all 0.25s var(--ease-out-expo);
 }
 
 .upload-zone:hover {
-  border-color: var(--color-primary);
-  background-color: #faf5ff;
+  border-color: var(--color-brand);
+  background: var(--color-brand-light);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -8px rgb(139 92 246 / 0.2);
+}
+
+.upload-zone.has-file {
+  border-style: solid;
+  border-color: var(--color-warm-200);
+  padding: var(--space-4);
 }
 
 /* Style card */
 .style-card {
   background: white;
-  border: 2px solid #e5e7eb;
-  border-radius: 0.75rem;
-  padding: 1rem;
+  border: 2px solid var(--color-warm-200);
+  border-radius: 0.875rem;
+  padding: var(--space-4) var(--space-2);
   text-align: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s var(--ease-out-expo);
+  position: relative;
+  overflow: hidden;
+}
+
+.style-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-brand-light);
+  opacity: 0;
+  transition: opacity 0.25s var(--ease-out-expo);
 }
 
 .style-card:hover {
-  border-color: var(--color-primary);
+  border-color: var(--color-brand);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px -4px rgb(139 92 246 / 0.25);
+}
+
+.style-card:hover::before {
+  opacity: 1;
 }
 
 .style-card.selected {
-  border-color: var(--color-primary);
-  background-color: #faf5ff;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  border-color: var(--color-brand);
+  background: white;
+  box-shadow: 0 0 0 4px var(--color-brand-light), 0 4px 12px -4px rgb(139 92 246 / 0.3);
+}
+
+.style-card.selected::before {
+  opacity: 1;
 }
 
 /* Gradient button */
 .btn-gradient {
   width: 100%;
-  padding: 1rem;
-  background: linear-gradient(135deg, #8b5cf6 0%, #764ba2 100%);
+  padding: var(--space-4) var(--space-6);
+  background: var(--color-brand);
   color: white;
-  border-radius: 0.75rem;
-  font-size: 1.125rem;
+  border-radius: 0.875rem;
+  font-size: 1rem;
   font-weight: 600;
   border: none;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s var(--ease-out-expo);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-gradient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-brand-hover);
+  opacity: 0;
+  transition: opacity 0.2s;
 }
 
 .btn-gradient:hover:not(:disabled) {
-  box-shadow: 0 10px 15px -3px rgb(139 92 246 / 0.3);
   transform: translateY(-2px);
+  box-shadow: 0 8px 24px -8px rgb(139 92 246 / 0.4);
+}
+
+.btn-gradient:hover:not(:disabled)::before {
+  opacity: 1;
 }
 
 .btn-gradient:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
   transform: none;
 }
 
-/* Spinner */
+.btn-gradient span {
+  position: relative;
+  z-index: 1;
+}
+
+/* Spinner - 更现代的太极风格 */
 .spinner {
   width: 2.5rem;
   height: 2.5rem;
-  border: 4px solid #e5e7eb;
-  border-top-color: #8b5cf6;
+  border: 3px solid var(--color-warm-200);
+  border-top-color: var(--color-brand);
+  border-right-color: var(--color-brand);
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 0.8s linear infinite;
   margin: 0 auto;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* Skeleton loading */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-warm-100) 0%,
+    var(--color-warm-200) 50%,
+    var(--color-warm-100) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 0.5rem;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Result card */
+.result-card {
+  background: white;
+  border-radius: 1rem;
+  padding: var(--space-6);
+  box-shadow: 0 4px 24px -8px rgb(0 0 0 / 0.08);
+  animation: fadeIn 0.4s var(--ease-out-expo);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Error/Success banners */
+.banner {
+  border-radius: 0.75rem;
+  padding: var(--space-3) var(--space-4);
+  font-size: 0.875rem;
+  font-weight: 500;
+  animation: fadeIn 0.3s var(--ease-out-expo);
+}
+
+.banner-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
+.banner-success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+}
+
+.banner-warning {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+/* Focus states - 无障碍 */
+*:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

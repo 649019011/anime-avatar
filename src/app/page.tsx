@@ -9,20 +9,21 @@ interface Style {
   name: string
   emoji: string
   prompt: string
+  desc: string
 }
 
 const STYLES: Style[] = [
-  { id: 'anime_standard', name: 'Anime', emoji: '🎌', prompt: 'anime style, high quality' },
-  { id: 'manga', name: 'Manga', emoji: '📖', prompt: 'manga style, black and white' },
-  { id: 'ghibli', name: 'Ghibli', emoji: '🌿', prompt: 'ghibli studio style, Hayao Miyazaki' },
-  { id: 'cyberpunk', name: 'Cyberpunk', emoji: '🌃', prompt: 'cyberpunk anime, neon lights' },
-  { id: 'soft_cel', name: 'Soft', emoji: '🌸', prompt: 'soft cel shading, pastel colors' },
+  { id: 'anime_standard', name: 'Anime', emoji: '🎌', prompt: 'anime style, high quality', desc: 'Classic anime' },
+  { id: 'manga', name: 'Manga', emoji: '📖', prompt: 'manga style, black and white', desc: 'Black & white' },
+  { id: 'ghibli', name: 'Ghibli', emoji: '🌿', prompt: 'ghibli studio style, Hayao Miyazaki', desc: 'Studio Ghibli' },
+  { id: 'cyberpunk', name: 'Cyberpunk', emoji: '🌃', prompt: 'cyberpunk anime, neon lights', desc: 'Neon vibes' },
+  { id: 'soft_cel', name: 'Soft', emoji: '🌸', prompt: 'soft cel shading, pastel colors', desc: 'Gentle pastels' },
 ]
 
 const PLANS = [
   { name: 'Free', price: '$0', credits: 3, desc: 'Try it out', highlight: false },
   { name: 'Basic', price: '$4.99', credits: 20, desc: 'Perfect for casual', highlight: false },
-  { name: 'Standard', price: '$9.99', credits: 50, desc: 'Most popular choice', highlight: true },
+  { name: 'Standard', price: '$9.99', credits: 50, desc: 'Most popular', highlight: true },
   { name: 'Pro', price: '$19.99', credits: 120, desc: 'For power users', highlight: false },
 ]
 
@@ -63,11 +64,11 @@ export default function HomePage() {
 
   const handleFileSelect = useCallback((file: File) => {
     if (!file.type.startsWith('image/')) {
-      setError('Please select an image file (JPG, PNG, WebP)')
+      setError('Please select a valid image file (JPG, PNG, WebP)')
       return
     }
     if (file.size > 10 * 1024 * 1024) {
-      setError('File size must be less than 10MB')
+      setError('File is too large. Please use an image under 10MB')
       return
     }
     setSelectedFile(file)
@@ -112,136 +113,176 @@ export default function HomePage() {
       const data = await response.json()
 
       if (!data.success) {
-        throw new Error(data.error || 'Generation failed')
+        throw new Error(data.error || 'Generation failed. Please try again.')
       }
 
-      setStatusText('Done! 🎉')
+      setStatusText('Done! ✨')
       setResultImage(data.image)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong')
+      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
     } finally {
       setIsGenerating(false)
     }
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen" style={{ background: 'var(--color-warm-50)' }}>
       {/* Header */}
-      <header className="text-center py-10 px-4">
-        <h1 className="text-4xl font-extrabold bg-gradient-to-r from-purple-500 to-violet-600 bg-clip-text text-transparent mb-2">
-          ✨ Anime Avatar
+      <header className="text-center py-16 px-4">
+        <h1 
+          className="text-5xl font-extrabold mb-3"
+          style={{ 
+            fontFamily: 'var(--font-heading)',
+            background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}
+        >
+          Anime Avatar
         </h1>
-        <p className="text-gray-500 text-lg">Transform your photo into stunning anime style</p>
-        <div className="flex justify-center gap-6 mt-3 text-sm text-gray-400">
+        <p className="text-lg" style={{ color: 'var(--color-warm-500)' }}>
+          Transform your photo into stunning anime style
+        </p>
+        <div className="flex justify-center gap-6 mt-4 text-sm" style={{ color: 'var(--color-warm-400)' }}>
           <span>🎨 5 Anime Styles</span>
           <span>⚡ 10 Seconds</span>
           <span>💎 10K+ Happy Users</span>
         </div>
       </header>
 
-      <div className="max-w-xl mx-auto px-4 pb-12">
+      <div className="max-w-xl mx-auto px-4 pb-16">
 
         {/* How It Works */}
         <section className="mb-10">
-          <h2 className="text-xl font-bold text-gray-800 text-center mb-6">How It Works 🔥</h2>
+          <h2 className="text-xl font-bold mb-6 text-center" style={{ color: 'var(--color-warm-800)', fontFamily: 'var(--font-heading)' }}>
+            How It Works 🔥
+          </h2>
           <div className="grid grid-cols-3 gap-3">
-            <div className="bg-white rounded-2xl p-4 text-center shadow-sm">
-              <div className="text-3xl mb-2">📤</div>
-              <div className="text-sm font-semibold text-gray-700 mb-1">Upload</div>
-              <div className="text-xs text-gray-400">Your photo in seconds</div>
-            </div>
-            <div className="bg-white rounded-2xl p-4 text-center shadow-sm">
-              <div className="text-3xl mb-2">🎨</div>
-              <div className="text-sm font-semibold text-gray-700 mb-1">Choose Style</div>
-              <div className="text-xs text-gray-400">5 anime styles</div>
-            </div>
-            <div className="bg-white rounded-2xl p-4 text-center shadow-sm">
-              <div className="text-3xl mb-2">⬇️</div>
-              <div className="text-sm font-semibold text-gray-700 mb-1">Download</div>
-              <div className="text-xs text-gray-400">HD quality avatar</div>
-            </div>
+            {[
+              { emoji: '📤', title: 'Upload', desc: 'Your photo in seconds' },
+              { emoji: '🎨', title: 'Choose Style', desc: '5 anime styles' },
+              { emoji: '⬇️', title: 'Download', desc: 'HD quality avatar' },
+            ].map((step, i) => (
+              <div key={i} className="bg-white rounded-2xl p-5 text-center" style={{ boxShadow: '0 2px 12px -4px rgb(0 0 0 / 0.08)' }}>
+                <div className="text-3xl mb-3">{step.emoji}</div>
+                <div className="text-sm font-semibold mb-1" style={{ color: 'var(--color-warm-700)' }}>{step.title}</div>
+                <div className="text-xs" style={{ color: 'var(--color-warm-400)' }}>{step.desc}</div>
+              </div>
+            ))}
           </div>
         </section>
 
-        {/* Showcase - Before/After Comparison */}
+        {/* Showcase */}
         <section className="mb-10">
-          <h2 className="text-xl font-bold text-gray-800 text-center mb-6">See the Magic ✨</h2>
+          <h2 className="text-xl font-bold mb-6 text-center" style={{ color: 'var(--color-warm-800)', fontFamily: 'var(--font-heading)' }}>
+            See the Magic ✨
+          </h2>
           <div className="grid grid-cols-2 gap-3">
-            <div className="bg-white rounded-2xl p-3 shadow-sm">
-              <p className="text-xs text-gray-400 text-center mb-2">Before</p>
+            <div className="bg-white rounded-2xl p-3" style={{ boxShadow: '0 2px 12px -4px rgb(0 0 0 / 0.08)' }}>
+              <p className="text-xs text-center mb-2" style={{ color: 'var(--color-warm-400)' }}>Before</p>
               <img src="/demo-before.jpeg" alt="Before" className="rounded-xl w-full object-cover aspect-square" />
             </div>
-            <div className="bg-white rounded-2xl p-3 shadow-sm border-2 border-purple-400">
-              <p className="text-xs text-purple-600 text-center mb-2 font-semibold">After (Anime)</p>
+            <div className="bg-white rounded-2xl p-3 border-2" style={{ borderColor: 'var(--color-brand)', boxShadow: '0 4px 16px -4px rgb(139 92 246 / 0.3)' }}>
+              <p className="text-xs text-center mb-2 font-semibold" style={{ color: 'var(--color-brand)' }}>After (Anime)</p>
               <img src="/demo-after.jpeg" alt="After" className="rounded-xl w-full object-cover aspect-square" />
             </div>
           </div>
         </section>
 
         {/* Credits Banner */}
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-center text-amber-800 text-sm mb-4">
-          🎁 You have <span className="font-bold">{credits}</span> free credits
-        </div>
+        {credits > 0 && (
+          <div className="banner banner-warning mb-6 flex items-center justify-center gap-2">
+            <span>🎁</span>
+            <span>You have <strong>{credits}</strong> free credit{credits !== 1 ? 's' : ''}</span>
+          </div>
+        )}
 
         {/* Upload Zone */}
-        <div
-          className="upload-zone mb-6"
-          onClick={() => fileInputRef.current?.click()}
-          onDrop={handleDrop}
-          onDragOver={(e) => e.preventDefault()}
-        >
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleInputChange}
-            accept="image/jpeg,image/png,image/webp"
-            className="hidden"
-          />
-          {previewUrl ? (
-            <img src={previewUrl} alt="Preview" className="max-h-64 mx-auto rounded-xl object-contain" />
-          ) : (
-            <>
-              <div className="text-5xl mb-3">📸</div>
-              <p className="text-gray-600">Click or drag your photo here</p>
-              <p className="text-gray-400 text-sm mt-1">JPG, PNG, WebP • Max 10MB</p>
-            </>
-          )}
-        </div>
+        {!resultImage && (
+          <div
+            className={`upload-zone mb-6 ${previewUrl ? 'has-file' : ''}`}
+            onClick={() => fileInputRef.current?.click()}
+            onDrop={handleDrop}
+            onDragOver={(e) => e.preventDefault()}
+          >
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleInputChange}
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+            />
+            {previewUrl ? (
+              <img 
+                src={previewUrl} 
+                alt="Preview" 
+                className="max-h-72 mx-auto rounded-xl object-contain"
+                style={{ boxShadow: '0 8px 32px -8px rgb(0 0 0 / 0.15)' }}
+              />
+            ) : (
+              <>
+                <div className="text-5xl mb-4">📸</div>
+                <p className="text-base font-medium" style={{ color: 'var(--color-warm-700)' }}>
+                  Drop your photo here
+                </p>
+                <p className="text-sm mt-2" style={{ color: 'var(--color-warm-400)' }}>
+                  or click to browse · JPG, PNG, WebP · Max 10MB
+                </p>
+              </>
+            )}
+          </div>
+        )}
 
         {/* Style Selector */}
-        <div className="mb-6">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">Choose your anime style</h3>
-          <div className="grid grid-cols-5 gap-2">
-            {STYLES.map((style) => (
-              <div
-                key={style.id}
-                className={`style-card ${selectedStyle === style.id ? 'selected' : ''}`}
-                onClick={() => setSelectedStyle(style.id)}
-              >
-                <span className="text-2xl">{style.emoji}</span>
-                <div className="text-xs font-medium mt-1">{style.name}</div>
-              </div>
-            ))}
+        {!resultImage && (
+          <div className="mb-6">
+            <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--color-warm-600)' }}>
+              Choose your anime style
+            </h3>
+            <div className="grid grid-cols-5 gap-3">
+              {STYLES.map((style) => (
+                <div
+                  key={style.id}
+                  className={`style-card ${selectedStyle === style.id ? 'selected' : ''}`}
+                  onClick={() => setSelectedStyle(style.id)}
+                >
+                  <span className="text-2xl relative z-10">{style.emoji}</span>
+                  <div className="text-sm font-semibold mt-2 relative z-10" style={{ color: 'var(--color-warm-700)' }}>
+                    {style.name}
+                  </div>
+                  <div className="text-xs mt-1 relative z-10" style={{ color: 'var(--color-warm-400)' }}>
+                    {style.desc}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Error */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm mb-4">
-            ⚠️ {error}
+          <div className="banner banner-error mb-4 flex items-center gap-2">
+            <span>⚠️</span>
+            <span>{error}</span>
           </div>
         )}
 
         {/* Result */}
         {resultImage && (
-          <div className="bg-white rounded-2xl p-4 text-center shadow-sm mb-4">
-            <img src={resultImage} alt="Result" className="rounded-xl mb-4 max-w-full" />
+          <div className="result-card mb-6">
+            <img 
+              src={resultImage} 
+              alt="Generated anime avatar" 
+              className="rounded-xl mb-6 max-w-full w-full"
+              style={{ boxShadow: '0 12px 40px -12px rgb(0 0 0 / 0.2)' }}
+            />
             <a
               href={resultImage}
               download="anime-avatar.png"
-              className="inline-block px-6 py-3 bg-gradient-to-r from-purple-500 to-violet-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+              className="btn-gradient block text-center"
             >
-              ⬇️ Download Avatar
+              <span>⬇️ Download Avatar</span>
             </a>
             <button
               onClick={() => {
@@ -249,18 +290,24 @@ export default function HomePage() {
                 setSelectedFile(null)
                 setPreviewUrl(null)
               }}
-              className="block w-full mt-3 py-2 text-gray-500 hover:text-gray-700 text-sm"
+              className="w-full mt-4 py-3 text-sm font-medium transition-all hover:opacity-70"
+              style={{ color: 'var(--color-warm-500)' }}
             >
-              🔄 Create Another
+              🔄 Create another
             </button>
           </div>
         )}
 
-        {/* Generating Status */}
+        {/* Generating Status - Skeleton Loading */}
         {isGenerating && (
-          <div className="bg-white rounded-2xl p-8 text-center shadow-sm mb-4">
-            <div className="spinner mb-4"></div>
-            <p className="text-gray-600">{statusText}</p>
+          <div className="result-card mb-6">
+            <div className="skeleton h-80 w-full mb-4 rounded-xl"></div>
+            <div className="text-center">
+              <div className="spinner mb-4"></div>
+              <p className="text-sm font-medium" style={{ color: 'var(--color-warm-600)' }}>
+                {statusText}
+              </p>
+            </div>
           </div>
         )}
 
@@ -271,67 +318,81 @@ export default function HomePage() {
             onClick={handleGenerate}
             disabled={!selectedFile || credits <= 0}
           >
-            {credits > 0 ? '🎨 Generate Anime Avatar' : 'No credits remaining'}
+            <span>
+              {credits > 0 
+                ? selectedFile 
+                  ? '🎨 Generate Anime Avatar' 
+                  : '📸 Upload a photo to start'
+                : 'No credits remaining'}
+            </span>
           </button>
         )}
 
-        {/* Social Proof / Testimonials */}
+        {/* Testimonials */}
         <section className="mt-16 mb-8">
-          <h2 className="text-xl font-bold text-gray-800 text-center mb-6">Loved by Users 💬</h2>
+          <h2 className="text-xl font-bold mb-6 text-center" style={{ color: 'var(--color-warm-800)', fontFamily: 'var(--font-heading)' }}>
+            Loved by Users 💬
+          </h2>
           <div className="space-y-3">
             {TESTIMONIALS.map((t, i) => (
-              <div key={i} className="bg-white rounded-2xl p-4 shadow-sm">
+              <div key={i} className="bg-white rounded-2xl p-4" style={{ boxShadow: '0 2px 12px -4px rgb(0 0 0 / 0.08)' }}>
                 <div className="flex items-center gap-3 mb-3">
                   <img src={t.avatar} alt={t.name} className="w-10 h-10 rounded-full object-cover" />
                   <div className="flex-1">
-                    <div className="font-semibold text-sm text-gray-800">{t.name}</div>
+                    <div className="font-semibold text-sm" style={{ color: 'var(--color-warm-800)' }}>{t.name}</div>
                     <div className="text-xs text-amber-400">{'★'.repeat(t.rating)}</div>
                   </div>
                   <img src={t.result} alt="result" className="w-12 h-12 rounded-lg object-cover" />
                 </div>
-                <p className="text-sm text-gray-600 italic">"{t.text}"</p>
+                <p className="text-sm italic" style={{ color: 'var(--color-warm-600)' }}>"{t.text}"</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Pricing Section */}
+        {/* Pricing */}
         <section className="mt-16 mb-8">
-          <h2 className="text-xl font-bold text-gray-800 text-center mb-6">Simple Pricing 💎</h2>
+          <h2 className="text-xl font-bold mb-6 text-center" style={{ color: 'var(--color-warm-800)', fontFamily: 'var(--font-heading)' }}>
+            Simple Pricing 💎
+          </h2>
           <div className="grid grid-cols-2 gap-3">
             {PLANS.map((plan) => (
               <div
                 key={plan.name}
                 className={`rounded-2xl p-4 text-center ${
                   plan.highlight
-                    ? 'bg-gradient-to-br from-purple-500 to-violet-600 text-white shadow-lg scale-105'
-                    : 'bg-white border border-gray-200 text-gray-700'
+                    ? 'text-white'
+                    : 'bg-white border'
                 }`}
+                style={plan.highlight 
+                  ? { background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)', boxShadow: '0 8px 24px -8px rgb(139 92 246 / 0.4)' }
+                  : { borderColor: 'var(--color-warm-200)', boxShadow: '0 2px 12px -4px rgb(0 0 0 / 0.08)' }
+                }
               >
                 {plan.highlight && (
-                  <div className="text-xs font-bold text-purple-200 mb-1">⭐ MOST POPULAR</div>
+                  <div className="text-xs font-bold mb-1" style={{ color: 'rgb(233 213 255)' }}>⭐ MOST POPULAR</div>
                 )}
                 <div className="text-2xl font-extrabold mb-1">{plan.price}</div>
                 <div className="text-sm font-semibold">{plan.credits} credits</div>
-                <div className={`text-xs mt-1 ${plan.highlight ? 'text-purple-200' : 'text-gray-400'}`}>
+                <div className="text-xs mt-1" style={plan.highlight ? { color: 'rgb(233 213 255)' } : { color: 'var(--color-warm-400)' }}>
                   {plan.desc}
                 </div>
               </div>
             ))}
           </div>
-          <p className="text-center text-gray-400 text-xs mt-4">
+          <p className="text-center text-sm mt-4" style={{ color: 'var(--color-warm-400)' }}>
             Credits never expire · One-time purchase · Secure payment
           </p>
         </section>
 
         {/* Footer */}
-        <footer className="text-center text-gray-400 text-sm mt-8">
-          <div className="flex justify-center gap-4 mb-2">
-            <a href="#" className="hover:text-gray-600">Privacy Policy</a>
-            <a href="#" className="hover:text-gray-600">Terms of Service</a>
-            <a href="#" className="hover:text-gray-600">Contact</a>
+        <footer className="text-center mt-12" style={{ color: 'var(--color-warm-400)' }}>
+          <div className="flex justify-center gap-6 mb-3 text-sm">
+            <a href="#" className="hover:opacity-70 transition-opacity">Privacy Policy</a>
+            <a href="#" className="hover:opacity-70 transition-opacity">Terms of Service</a>
+            <a href="#" className="hover:opacity-70 transition-opacity">Contact</a>
           </div>
-          © 2026 Anime Avatar · Made with ✨ AI
+          <p className="text-sm">© 2026 Anime Avatar · Made with ✨ AI</p>
         </footer>
       </div>
     </main>
